@@ -13,7 +13,7 @@ const Footer = () => {
           
           {/* BRAND */}
           <div className="flex flex-col gap-3">
-            <h2 className="text-xl font-bold text-primary">QuyDung</h2>
+            <h2 className="text-xl font-bold text-primary">Vu Trung Kien</h2>
             <p className="text-text-secondary leading-relaxed max-w-xs">
               {t("heroDesc")}
             </p>
@@ -25,10 +25,10 @@ const Footer = () => {
               {t("menu")}
             </h4>
             <ul className="flex flex-col gap-2 text-text-secondary">
-              <li><Link className="hover:text-primary" to="/sale">{t("sale")}</Link></li>
-              <li><Link className="hover:text-primary" to="/mattress">{t("mattress")}</Link></li>
-              <li><Link className="hover:text-primary" to="/bedding">{t("beddingSets")}</Link></li>
-              <li><Link className="hover:text-primary" to="/accessories">{t("accessories")}</Link></li>
+              <li><Link className="hover:text-primary" to="/">{t("home")}</Link></li>
+              <li><Link className="hover:text-primary" to="/chats">{t("chats")}</Link></li>
+              <li><Link className="hover:text-primary" to="/">{t("support")}</Link></li>
+              <li><Link className="hover:text-primary" to="/">{t("contact")}</Link></li>
             </ul>
           </div>
 
@@ -38,8 +38,8 @@ const Footer = () => {
               {t("support")}
             </h4>
             <ul className="flex flex-col gap-2 text-text-secondary">
-              <li><Link className="hover:text-primary" to="/contact">{t("faq")}</Link></li>
-              <li><Link className="hover:text-primary" to="/manage-order">{t("manageOrder")}</Link></li>
+              <li><Link className="hover:text-primary" to="/">{t("faq")}</Link></li>
+              <li><Link className="hover:text-primary" to="/">{t("manageProfile")}</Link></li>
             </ul>
           </div>
 
@@ -49,9 +49,9 @@ const Footer = () => {
               {t("contact")}
             </h4>
             <ul className="flex flex-col gap-2 text-text-secondary">
-              <li>Email: support@quydung.com</li>
-              <li>Hotline: 0123 456 789</li>
-              <li>{t("monday")} - {t("sunday")}: 8:00 - 22:00</li>
+              <li>Email: vtkien.it@gmail.com</li>
+              <li>Hotline: 0384816409</li>
+              <li>{t("monday")} - {t("sunday")}: 8:00 AM - 5:00 PM</li>
             </ul>
           </div>
         </div>

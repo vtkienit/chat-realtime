@@ -140,7 +140,7 @@ export default function Home() {
             </p>
 
             <button className="bg-primary text-white font-semibold py-2 px-6 rounded-md hover:bg-primary/80 cursor-pointer">
-              {t("shopNow")}
+              {t("chatNow")}
             </button>
           </motion.div>
         </div>
@@ -153,36 +153,17 @@ export default function Home() {
             {/* Title */}
             <div>
               <span className="text-primary font-bold text-sm uppercase mb-2">
-                {t("limitedTime")}
+                {t("chatNow")}
               </span>
 
               <h2 className="text-text text-2xl md:text-5xl font-semibold">
-                {t("flashSale")}
+                {t("hotUsers")}
               </h2>
-
-              {/* Countdown - MOBILE */}
-              <div className="flex items-center gap-2 mt-3 md:hidden">
-                <Timer size={16} className="text-primary" strokeWidth={2.5} />
-                <span className="text-base text-text-secondary">
-                  {t("endsIn")}
-                </span>
-                <span className="text-base text-text font-mono font-semibold">
-                  {timeLeft}
-                </span>
-              </div>
             </div>
 
-            {/* Countdown - DESKTOP */}
-            <div className="hidden md:flex items-center gap-3 text-sm bg-bg-secondary px-4 py-2 rounded-full border border-border">
-              <Timer size={16} className="text-primary" strokeWidth={2.5} />
-              <span className="text-text-secondary">{t("endsIn")}</span>
-              <span className="text-text text-base font-mono font-semibold">
-                {timeLeft}
-              </span>
-            </div>
           </div>
 
-          <div className="flex justify-end mt-2 md:mt-4">
+          <div className="flex justify-end">
             <button
               onClick={() => navigate("/chats")}
               className="text-primary font-semibold flex items-center gap-2 cursor-pointer"

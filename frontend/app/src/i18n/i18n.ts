@@ -83,11 +83,14 @@ export const translations = {
     transparent: "Trong suốt",
 
     chats: "Trò chuyện",
+    chatNow: "Chat Ngay",
     logout: "Đăng xuất",
     signin: "Đăng nhập",
     signup: "Đăng ký",
     registerAccount: "Đăng ký tài khoản",
     account: "Tài khoản",
+    manageProfile: "Quản lý hồ sơ",
+    hotUsers: "Người dùng nổi bật",
   },
   en: {
     hi: "Hi",
@@ -173,10 +176,13 @@ export const translations = {
     transparent: "Transparent",
 
     chats: "Chats",
+    chatNow: "Chat Now",
     logout: "Logout",
     signin: "Sign In",
     signup: "Sign Up",
     registerAccount: "Register Account",
     account: "Account",
+    manageProfile: "Manage Profile",
+    hotUsers: "Hot Users",
   },
 };
