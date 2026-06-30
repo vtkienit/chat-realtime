@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test</title>
+</head>
+<body>
+<h2>Chat Test</h2>
+
+<div>
+    <input id="token" placeholder="JWT token" style="width: 600px;">
+    <button onclick="connect()">Connect</button>
+</div>
+
+<div>
+    <input id="conversationId" value="1" placeholder="conversationId">
+    <button onclick="subscribeConversation()">Subscribe</button>
+</div>
+
+<div>
+    <input id="content" placeholder="message">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<hr>
+
+<pre id="messages"></pre>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+
+<script>
+    let client = null;
+    let subscription = null;
+
+    function connect() {
+        const token = document.getElementById("token").value;
+
+        client = new StompJs.Client({
+            webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+            reconnectDelay: 5000,
+            connectHeaders: {
+                Authorization: "Bearer " + token
+            },
+
+            onConnect: () => {
+                console.log("Connected with JWT");
+                subscribeConversation();
+            },
+
+            onStompError: (frame) => {
+                console.error("STOMP error:", frame);
+            }
+        });
+
+        client.activate();
+    }
+
+    function subscribeConversation() {
+        if (!client || !client.connected) {
+            console.log("Not connected yet");
+            return;
+        }
+
+        if (subscription) {
+            subscription.unsubscribe();
+        }
+
+        const conversationId = document.getElementById("conversationId").value;
+        const topic = "/broadcast/conversations/" + conversationId + "/messages";
+
+        console.log("Subscribing to:", topic);
+
+        subscription = client.subscribe(topic, (message) => {
+            console.log("Received:", message.body);
+
+            const data = JSON.parse(message.body);
+
+            document.getElementById("messages").textContent +=
+                "Sender " + data.senderId + ": " + data.content + "\n";
+        });
+    }
+
+    function sendMessage() {
+        if (!client || !client.connected) {
+            alert("WebSocket is not connected yet");
+            return;
+        }
+
+        const token = document.getElementById("token").value;
+        const conversationId = Number(document.getElementById("conversationId").value);
+        const content = document.getElementById("content").value;
+
+        client.publish({
+            destination: "/app/conversations/" + conversationId + "/messages",
+            headers: {
+                Authorization: "Bearer " + token
+            },
+            body: JSON.stringify({
+                content: content
+            })
+        });
+
+        document.getElementById("content").value = "";
+    }
+</script>
+</body>
+</html>
