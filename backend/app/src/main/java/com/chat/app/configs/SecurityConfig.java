@@ -43,10 +43,20 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // Allow all OPTIONS requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Public auth APIs
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+
+                        // WebSocket handshake
                         .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/api/users").permitAll()
+
+                        // Chat/user APIs need login
+                        .requestMatchers("/api/conversations/**").authenticated()
+
+                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
 
