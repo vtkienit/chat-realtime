@@ -3,6 +3,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Chats from "./pages/Chats";
+import Support from "./pages/Support";
+import Contact from "./pages/Contact";
 
 function App() {
 
@@ -11,6 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/chats" element={<Chats />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

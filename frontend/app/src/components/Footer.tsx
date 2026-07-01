@@ -51,7 +51,7 @@ const Footer = () => {
             <ul className="flex flex-col gap-2 text-text-secondary">
               <li>Email: vtkien.it@gmail.com</li>
               <li>Hotline: 0384816409</li>
-              <li>{t("monday")} - {t("sunday")}: 8:00 AM - 5:00 PM</li>
+              <li>{t("monday")} - {t("friday")}: 8:00 AM - 5:00 PM</li>
             </ul>
           </div>
         </div>
@@ -61,7 +61,7 @@ const Footer = () => {
 
         {/* BOTTOM */}
         <div className="flex justify-center items-center text-sm text-text-secondary">
-          <span>© 2026 QuyDung. {t("rights")}.</span>
+          <span>© 2026 Vu Trung Kien. {t("rights")}.</span>
         </div>
       </div>
     </footer>

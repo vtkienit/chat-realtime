@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { MessageCircle } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageProvider";
 
 type UserCardProps = {
   id: number;
@@ -18,6 +19,8 @@ export default function UserCard({
   className,
   onChat,
 }: UserCardProps) {
+  const { t } = useLanguage();
+
   const firstLetter = name?.trim()?.charAt(0)?.toUpperCase() || "?";
 
   const handleChatClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -68,7 +71,7 @@ export default function UserCard({
           "
         >
           <MessageCircle size={17} />
-          Chat
+          {t("chat")}
         </button>
       </div>
     </div>

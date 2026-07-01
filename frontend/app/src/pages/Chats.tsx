@@ -6,6 +6,7 @@ import { Client } from "@stomp/stompjs";
 import type { IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import clsx from "clsx";
+import { useLanguage } from "../contexts/LanguageProvider";
 import {
   AlertCircle,
   ArrowLeft,
@@ -48,6 +49,7 @@ const API_URL = "http://localhost:8080";
 
 export default function Chats() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [currentUser, setCurrentUser] = useState<ChatUser | null>(null);
   const [users, setUsers] = useState<ChatUser[]>([]);
@@ -229,7 +231,7 @@ export default function Chats() {
 
     if (!response.ok) {
       throw new Error(
-        (data as ApiErrorResponse)?.message || "Failed to load messages"
+        (data as ApiErrorResponse)?.message || t("failedToLoadMessages")
       );
     }
 
@@ -249,7 +251,7 @@ export default function Chats() {
     }
 
     if (!loginUserId || !receiverId) {
-      throw new Error("Missing user id. Please login again.");
+      throw new Error(t("missingUserId"));
     }
 
     const body = {
@@ -283,7 +285,7 @@ export default function Chats() {
 
     if (!response.ok) {
       throw new Error(
-        (data as ApiErrorResponse)?.message || "Failed to create conversation"
+        (data as ApiErrorResponse)?.message || t("failedToCreateConversation")
       );
     }
 
@@ -302,7 +304,7 @@ export default function Chats() {
     }
 
     if (receiver.id === loginUser.id) {
-      setError("Cannot create conversation with yourself");
+      setError(t("cannotChatWithYourself"));
       return;
     }
 
@@ -335,7 +337,7 @@ export default function Chats() {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(t("somethingWentWrong"));
       }
     } finally {
       openingConversationRef.current = false;
@@ -370,7 +372,7 @@ export default function Chats() {
 
       if (!response.ok) {
         throw new Error(
-          (data as ApiErrorResponse)?.message || "Failed to load users"
+          (data as ApiErrorResponse)?.message || t("failedToLoadUsers")
         );
       }
 
@@ -389,7 +391,7 @@ export default function Chats() {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(t("somethingWentWrong"));
       }
     } finally {
       setIsLoadingUsers(false);
@@ -405,7 +407,7 @@ export default function Chats() {
     const client = clientRef.current;
 
     if (!client || !client.connected) {
-      setError("WebSocket is not connected yet.");
+      setError(t("websocketNotConnected"));
       return;
     }
 
@@ -451,7 +453,7 @@ export default function Chats() {
   return (
     <div className="h-dvh flex flex-col overflow-hidden bg-bg-subtle">
       <Helmet>
-        <title>Chats</title>
+        <title>{t("chats")}</title>
       </Helmet>
 
       <Header />
@@ -473,7 +475,9 @@ export default function Chats() {
             >
               <div className="shrink-0 px-4 py-4 border-b border-border">
                 <div className="flex items-center justify-between gap-3">
-                  <h1 className="text-2xl font-bold text-text">Đoạn chat</h1>
+                  <h1 className="text-2xl font-bold text-text">
+                    {t("conversationsTitle")}
+                  </h1>
 
                   <button
                     type="button"
@@ -494,7 +498,7 @@ export default function Chats() {
                     type="text"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    placeholder="Tìm kiếm trên Messenger"
+                    placeholder={t("searchConversations")}
                     className="
                       w-full bg-transparent outline-none
                       text-sm text-text placeholder:text-text-tertiary
@@ -507,21 +511,21 @@ export default function Chats() {
                     type="button"
                     className="shrink-0 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary"
                   >
-                    Tất cả
+                    {t("allChats")}
                   </button>
 
                   <button
                     type="button"
                     className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-bg-secondary"
                   >
-                    Chưa đọc
+                    {t("unreadChats")}
                   </button>
 
                   <button
                     type="button"
                     className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-bg-secondary"
                   >
-                    Nhóm
+                    {t("groups")}
                   </button>
                 </div>
               </div>
@@ -571,7 +575,7 @@ export default function Chats() {
                         </div>
 
                         <p className="mt-0.5 text-sm text-text-secondary truncate">
-                          Click để bắt đầu chat
+                          {t("startChatHint")}
                         </p>
                       </div>
                     </button>
@@ -579,7 +583,7 @@ export default function Chats() {
 
                 {!isLoadingUsers && filteredUsers.length === 0 && (
                   <div className="px-4 py-8 text-center text-text-secondary">
-                    Không tìm thấy user nào.
+                    {t("noChatUsersFound")}
                   </div>
                 )}
               </div>
@@ -599,11 +603,11 @@ export default function Chats() {
                   </div>
 
                   <h2 className="text-2xl font-semibold text-text">
-                    Chọn một đoạn chat
+                    {t("selectConversationTitle")}
                   </h2>
 
                   <p className="mt-2 text-text-secondary">
-                    Chọn user ở bên trái để bắt đầu nhắn tin realtime.
+                    {t("selectConversationDesc")}
                   </p>
                 </div>
               ) : (
@@ -666,14 +670,14 @@ export default function Chats() {
                         <div className="flex flex-col items-center gap-3">
                           <Loader2 size={26} className="animate-spin" />
                           <p className="text-sm">
-                            Đang mở cuộc trò chuyện...
+                            {t("openingConversation")}
                           </p>
                         </div>
                       </div>
                     ) : messages.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center text-center text-text-secondary">
                         <MessageCircle size={34} className="mb-3" />
-                        <p>Chưa có tin nhắn nào.</p>
+                        <p>{t("noMessages")}</p>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -756,7 +760,7 @@ export default function Chats() {
                       <input
                         value={messageInput}
                         onChange={(e) => setMessageInput(e.target.value)}
-                        placeholder="Aa"
+                        placeholder={t("messageInputPlaceholder")}
                         disabled={isLoadingMessages}
                         className="
                           min-w-0 flex-1 rounded-full bg-bg-secondary
