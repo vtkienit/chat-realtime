@@ -4,13 +4,12 @@ import { Helmet } from "react-helmet-async";
 import { useLanguage } from "../contexts/LanguageProvider";
 import { motion } from "framer-motion";
 import {
-  Timer,
   ShieldCheck,
-  Truck,
-  Award,
   ChevronRight,
   Loader2,
   AlertCircle,
+  MessageCircle,
+  Users,
 } from "lucide-react";
 import UserCard from "../components/UserCard";
 import bannerImg from "../assets/images/home_banner.png";
@@ -25,38 +24,28 @@ type ChatUser = {
   role: string;
 };
 
-type UsersPageResponse = {
-  content: ChatUser[];
-  empty: boolean;
-  first: boolean;
-  last: boolean;
-  number: number;
-  numberOfElements: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-};
-
 type ApiErrorResponse = {
   message?: string;
 };
+
+const API_URL = "http://localhost:8080";
 
 export default function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  const [timeLeft] = useState("02 : 45 : 12");
   const [users, setUsers] = useState<ChatUser[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [usersError, setUsersError] = useState("");
 
-  const flashSaleSlider = useDragScroll();
+  const usersSlider = useDragScroll();
 
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setUsersError("Please login to see users.");
+      setUsers([]);
+      setUsersError(t("loginToSeeUsers"));
       return;
     }
 
@@ -64,32 +53,27 @@ export default function Home() {
     setUsersError("");
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/users?page=0&size=10",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/api/users/exclude`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      const data: UsersPageResponse | ApiErrorResponse = await response.json();
+      const data: ChatUser[] | ApiErrorResponse = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          (data as ApiErrorResponse).message || "Failed to load users"
+          (data as ApiErrorResponse).message || t("cannotLoadUsers")
         );
       }
 
-      const pageData = data as UsersPageResponse;
-
-      setUsers(pageData.content.slice(0, 10));
+      setUsers(((data as ChatUser[]) || []).slice(0, 10));
     } catch (error) {
       if (error instanceof Error) {
         setUsersError(error.message);
       } else {
-        setUsersError("Something went wrong. Please try again.");
+        setUsersError(t("cannotLoadUsers"));
       }
     } finally {
       setIsLoadingUsers(false);
@@ -101,7 +85,14 @@ export default function Home() {
   }, []);
 
   const handleChat = (userId: number) => {
-    navigate(`/chats/${userId}`);
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    navigate(`/chats?userId=${userId}`);
   };
 
   return (
@@ -110,7 +101,7 @@ export default function Home() {
         <title>{t("home")}</title>
       </Helmet>
 
-      {/* Hero Section - Mobile Focused Header, Large Desktop Presence */}
+      {/* Hero */}
       <section className="relative w-full h-[400px] md:h-[430px] overflow-hidden">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <motion.img
@@ -119,8 +110,9 @@ export default function Home() {
             transition={{ duration: 1.5 }}
             src={bannerImg}
             className="w-full h-full object-cover brightness-[0.8]"
-            alt="Restorative Comfort"
+            alt={t("homeHeroAlt")}
           />
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 md:bg-black/20" />
         </div>
 
@@ -139,18 +131,20 @@ export default function Home() {
               {t("heroDesc")}
             </p>
 
-            <button className="bg-primary text-white font-semibold py-2 px-6 rounded-md hover:bg-primary/80 cursor-pointer">
+            <button
+              onClick={() => navigate("/chats")}
+              className="bg-primary text-white font-semibold py-2 px-6 rounded-md hover:bg-primary/80 cursor-pointer"
+            >
               {t("chatNow")}
             </button>
           </motion.div>
         </div>
       </section>
 
-      {/* Flash Sale - Now showing users */}
+      {/* Users */}
       <section className="py-12 overflow-hidden">
         <div className="max-w-7xl mx-auto px-3 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-            {/* Title */}
             <div>
               <span className="text-primary font-bold text-sm uppercase mb-2">
                 {t("chatNow")}
@@ -160,10 +154,9 @@ export default function Home() {
                 {t("hotUsers")}
               </h2>
             </div>
-
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-2 md:mt-4">
             <button
               onClick={() => navigate("/chats")}
               className="text-primary font-semibold flex items-center gap-2 cursor-pointer"
@@ -176,7 +169,7 @@ export default function Home() {
             <div className="mt-4 flex items-center justify-center rounded-2xl border border-border bg-bg py-12">
               <div className="flex items-center gap-3 text-text-secondary">
                 <Loader2 size={22} className="animate-spin" />
-                <span className="font-medium">Loading users...</span>
+                <span className="font-medium">{t("loadingUsers")}</span>
               </div>
             </div>
           )}
@@ -184,8 +177,9 @@ export default function Home() {
           {!isLoadingUsers && usersError && (
             <div className="mt-4 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-600">
               <AlertCircle size={20} className="mt-0.5 shrink-0" />
+
               <div>
-                <p className="font-semibold">Cannot load users</p>
+                <p className="font-semibold">{t("cannotLoadUsers")}</p>
                 <p className="mt-1 text-sm">{usersError}</p>
               </div>
             </div>
@@ -193,14 +187,13 @@ export default function Home() {
 
           {!isLoadingUsers && !usersError && users.length > 0 && (
             <div
-              ref={flashSaleSlider.sliderRef}
-              {...flashSaleSlider.dragEvents}
+              ref={usersSlider.sliderRef}
+              {...usersSlider.dragEvents}
               className="
                 flex gap-3 lg:gap-5
                 overflow-x-auto hide-scrollbar
                 cursor-grab active:cursor-grabbing
-                select-none
-                touch-pan-y
+                select-none touch-pan-y
                 py-2 md:py-3
               "
             >
@@ -220,41 +213,44 @@ export default function Home() {
 
           {!isLoadingUsers && !usersError && users.length === 0 && (
             <div className="mt-4 rounded-2xl border border-border bg-bg py-12 text-center">
-              <p className="text-lg font-semibold text-text">No users found</p>
+              <p className="text-lg font-semibold text-text">
+                {t("noUsersFound")}
+              </p>
+
               <p className="mt-2 text-text-secondary">
-                There are no users available to chat with.
+                {t("noUsersAvailable")}
               </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Why Choose Us - Restful Icons */}
+      {/* Features */}
       <section className="py-12 md:py-14 border-t border-border">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
             <FeatureCard
               icon={
-                <Award
+                <MessageCircle
                   className="text-primary/70"
                   size={40}
                   strokeWidth={1}
                 />
               }
-              title={t("highQuality")}
-              desc={t("highQualityDesc")}
+              title={t("realtimeMessaging")}
+              desc={t("realtimeMessagingDesc")}
             />
 
             <FeatureCard
               icon={
-                <Truck
+                <Users
                   className="text-primary/70"
                   size={40}
                   strokeWidth={1}
                 />
               }
-              title={t("fastDelivery")}
-              desc={t("fastDeliveryDesc")}
+              title={t("connectWithPeople")}
+              desc={t("connectWithPeopleDesc")}
             />
 
             <FeatureCard
@@ -265,8 +261,8 @@ export default function Home() {
                   strokeWidth={1}
                 />
               }
-              title={t("warranty")}
-              desc={t("warrantyDesc")}
+              title={t("secureChat")}
+              desc={t("secureChatDesc")}
             />
           </div>
         </div>

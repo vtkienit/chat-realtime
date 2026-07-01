@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from "../components/Header/Header";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Client } from "@stomp/stompjs";
 import type { IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
@@ -67,6 +67,10 @@ export default function Chats() {
   const subscriptionRef = useRef<ReturnType<Client["subscribe"]> | null>(null);
   const activeConversationIdRef = useRef<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const openingConversationRef = useRef(false);
+
+  const [searchParams] = useSearchParams();
+  const targetUserId = Number(searchParams.get("userId"));
 
   const filteredUsers = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
@@ -128,7 +132,15 @@ export default function Chats() {
 
     if (!text) return null as T;
 
-    return JSON.parse(text) as T;
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return null as T;
+    }
+  };
+
+  const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
   const authHeaders = () => {
@@ -201,41 +213,28 @@ export default function Chats() {
       return;
     }
 
-    setIsLoadingMessages(true);
-    setError("");
-
-    try {
-      const response = await fetch(
-        `${API_URL}/api/conversations/${selectedConversationId}/messages`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await parseResponseJson<ChatMessage[] | ApiErrorResponse>(
-        response
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          (data as ApiErrorResponse)?.message || "Failed to load messages"
-        );
+    const response = await fetch(
+      `${API_URL}/api/conversations/${selectedConversationId}/messages`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
+    );
 
-      setMessages((data as ChatMessage[]) || []);
-      scrollToBottom();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
-    } finally {
-      setIsLoadingMessages(false);
+    const data = await parseResponseJson<ChatMessage[] | ApiErrorResponse>(
+      response
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        (data as ApiErrorResponse)?.message || "Failed to load messages"
+      );
     }
+
+    setMessages((data as ChatMessage[]) || []);
+    scrollToBottom();
   };
 
   const createOrGetConversation = async (
@@ -249,18 +248,38 @@ export default function Chats() {
       return null;
     }
 
-    const response = await fetch(`${API_URL}/api/conversations`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({
-        user1Id: loginUserId,
-        user2Id: receiverId,
-      }),
-    });
+    if (!loginUserId || !receiverId) {
+      throw new Error("Missing user id. Please login again.");
+    }
 
-    const data = await parseResponseJson<
-      ConversationResponse | ApiErrorResponse
-    >(response);
+    const body = {
+      user1Id: loginUserId,
+      user2Id: receiverId,
+    };
+
+    const request = () => {
+      return fetch(`${API_URL}/api/conversations`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      });
+    };
+
+    let response = await request();
+
+    let data = await parseResponseJson<ConversationResponse | ApiErrorResponse>(
+      response
+    );
+
+    if (!response.ok && response.status >= 500) {
+      await sleep(250);
+
+      response = await request();
+
+      data = await parseResponseJson<ConversationResponse | ApiErrorResponse>(
+        response
+      );
+    }
 
     if (!response.ok) {
       throw new Error(
@@ -275,6 +294,8 @@ export default function Chats() {
     receiver: ChatUser,
     loginUser = currentUser
   ) => {
+    if (openingConversationRef.current) return;
+
     if (!loginUser) {
       navigate("/login");
       return;
@@ -285,9 +306,17 @@ export default function Chats() {
       return;
     }
 
+    if (selectedUser?.id === receiver.id && conversationId) {
+      return;
+    }
+
+    openingConversationRef.current = true;
+
     setSelectedUser(receiver);
+    setConversationId(null);
     setMessages([]);
     setError("");
+    setIsLoadingMessages(true);
 
     try {
       const conversation = await createOrGetConversation(
@@ -308,6 +337,9 @@ export default function Chats() {
       } else {
         setError("Something went wrong. Please try again.");
       }
+    } finally {
+      openingConversationRef.current = false;
+      setIsLoadingMessages(false);
     }
   };
 
@@ -347,7 +379,11 @@ export default function Chats() {
       setUsers(allUsers);
 
       if (allUsers.length > 0) {
-        await openConversation(allUsers[0], loginUser);
+        const targetUser = targetUserId
+          ? allUsers.find((user) => user.id === targetUserId)
+          : null;
+
+        await openConversation(targetUser || allUsers[0], loginUser);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -398,6 +434,7 @@ export default function Chats() {
     setSelectedUser(null);
     setConversationId(null);
     setMessages([]);
+    setError("");
     subscriptionRef.current?.unsubscribe();
   };
 
@@ -502,9 +539,10 @@ export default function Chats() {
                     <button
                       key={user.id}
                       type="button"
+                      disabled={isLoadingMessages}
                       onClick={() => openConversation(user)}
                       className={clsx(
-                        "w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors cursor-pointer",
+                        "w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-70",
                         selectedUser?.id === user.id
                           ? "bg-bg-secondary"
                           : "hover:bg-bg-secondary"
@@ -625,7 +663,12 @@ export default function Chats() {
                   <div className="flex-1 min-h-0 overflow-y-auto px-3 md:px-4 py-5 bg-bg overscroll-contain">
                     {isLoadingMessages ? (
                       <div className="h-full flex items-center justify-center text-text-secondary">
-                        <Loader2 size={24} className="animate-spin" />
+                        <div className="flex flex-col items-center gap-3">
+                          <Loader2 size={26} className="animate-spin" />
+                          <p className="text-sm">
+                            Đang mở cuộc trò chuyện...
+                          </p>
+                        </div>
                       </div>
                     ) : messages.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center text-center text-text-secondary">
@@ -714,16 +757,22 @@ export default function Chats() {
                         value={messageInput}
                         onChange={(e) => setMessageInput(e.target.value)}
                         placeholder="Aa"
+                        disabled={isLoadingMessages}
                         className="
                           min-w-0 flex-1 rounded-full bg-bg-secondary
                           px-4 py-2.5 text-sm text-text outline-none
                           placeholder:text-text-tertiary
+                          disabled:cursor-not-allowed disabled:opacity-70
                         "
                       />
 
                       <button
                         type="submit"
-                        disabled={!messageInput.trim() || isSending}
+                        disabled={
+                          !messageInput.trim() ||
+                          isSending ||
+                          isLoadingMessages
+                        }
                         className="
                           w-10 h-10 rounded-full shrink-0
                           flex items-center justify-center

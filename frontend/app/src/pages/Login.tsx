@@ -120,7 +120,7 @@ export default function Login() {
       localStorage.setItem("token", loginData.token);
       localStorage.setItem("user", JSON.stringify(loginData.user));
 
-      navigate("/chats");
+      navigate("/");
     } catch (error) {
       if (error instanceof Error) {
         setApiError(error.message);

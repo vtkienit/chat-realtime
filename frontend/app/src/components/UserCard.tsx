@@ -4,8 +4,8 @@ import { MessageCircle } from "lucide-react";
 type UserCardProps = {
   id: number;
   name: string;
-  email: string;
-  color: string;
+  email?: string;
+  color?: string;
   className?: string;
   onChat?: (userId: number) => void;
 };
@@ -20,6 +20,11 @@ export default function UserCard({
 }: UserCardProps) {
   const firstLetter = name?.trim()?.charAt(0)?.toUpperCase() || "?";
 
+  const handleChatClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onChat?.(id);
+  };
+
   return (
     <div
       className={clsx(
@@ -28,7 +33,6 @@ export default function UserCard({
       )}
     >
       <div className="flex flex-col items-center px-5 py-6">
-        {/* Avatar */}
         <div
           className="
             w-20 h-20 md:w-24 md:h-24 rounded-full
@@ -41,20 +45,20 @@ export default function UserCard({
           {firstLetter}
         </div>
 
-        {/* Name */}
         <h3 className="mt-4 text-base md:text-lg font-semibold text-text text-center line-clamp-1">
           {name}
         </h3>
 
-        {/* Email */}
-        <p className="mt-1 text-sm text-text-secondary text-center line-clamp-1">
-          {email}
-        </p>
+        {email && (
+          <p className="mt-1 text-sm text-text-secondary text-center line-clamp-1">
+            {email}
+          </p>
+        )}
 
-        {/* Chat button */}
         <button
           type="button"
-          onClick={() => onChat?.(id)}
+          onClick={handleChatClick}
+          onPointerDown={(e) => e.stopPropagation()}
           className="
             mt-5 w-full rounded-full bg-primary px-5 py-2.5
             text-sm font-semibold text-white
