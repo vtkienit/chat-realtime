@@ -1,9 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:5432/postgres
-    username: postgres.xtumsgjhrxtbpurtavxv
-    password: Kienvu&0119
-
-  jpa:
-    hibernate:
-      ddl-auto: update
