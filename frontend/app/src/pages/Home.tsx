@@ -40,27 +40,42 @@ export default function Home() {
 
   const usersSlider = useDragScroll();
 
+  type UsersPageResponse = {
+    content: ChatUser[];
+  };
+
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
+    const userJson = localStorage.getItem("user");
 
-    if (!token) {
-      setUsers([]);
-      setUsersError(t("loginToSeeUsers"));
-      return;
+    let currentUserId: number | null = null;
+
+    if (token && userJson) {
+      try {
+        const currentUser = JSON.parse(userJson) as ChatUser;
+        currentUserId = currentUser.id;
+      } catch {
+        currentUserId = null;
+      }
     }
 
     setIsLoadingUsers(true);
     setUsersError("");
 
     try {
-      const response = await fetch(`${API_URL}/api/users/exclude`, {
+      const headers: HeadersInit = token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {};
+
+      const response = await fetch(`${API_URL}/api/users?page=0&size=10`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       });
 
-      const data: ChatUser[] | ApiErrorResponse = await response.json();
+      const data: ChatUser[] | UsersPageResponse | ApiErrorResponse =
+        await response.json();
 
       if (!response.ok) {
         throw new Error(
@@ -68,7 +83,15 @@ export default function Home() {
         );
       }
 
-      setUsers(((data as ChatUser[]) || []).slice(0, 10));
+      const userList = Array.isArray(data)
+        ? data
+        : ((data as UsersPageResponse).content || []);
+
+      const visibleUsers = currentUserId
+        ? userList.filter((user) => user.id !== currentUserId)
+        : userList;
+
+      setUsers(visibleUsers.slice(0, 10));
     } catch (error) {
       if (error instanceof Error) {
         setUsersError(error.message);
@@ -156,7 +179,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex justify-end mt-2 md:mt-4">
+          <div className="flex justify-end">
             <button
               onClick={() => navigate("/chats")}
               className="text-primary font-semibold flex items-center gap-2 cursor-pointer"

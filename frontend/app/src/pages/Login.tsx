@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useLanguage } from "../contexts/LanguageProvider";
 import {
   AlertCircle,
   ArrowLeft,
@@ -42,6 +43,7 @@ type ApiErrorResponse = {
 
 export default function Login() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [form, setForm] = useState<LoginForm>({
     email: "",
@@ -73,20 +75,30 @@ export default function Login() {
     const newErrors: LoginErrors = {};
 
     if (!form.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("loginEmailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = "Email is invalid";
+      newErrors.email = t("loginEmailInvalid");
     }
 
     if (!form.password.trim()) {
-      newErrors.password = "Password is required";
+      newErrors.password = t("loginPasswordRequired");
     } else if (form.password.length < 4) {
-      newErrors.password = "Password must be at least 4 characters";
+      newErrors.password = t("loginPasswordMinLength");
     }
 
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
+  };
+
+  const getApiErrorMessage = (message?: string) => {
+    if (!message) return t("loginFailed");
+
+    if (message === "Invalid email or password") {
+      return t("loginInvalidEmailOrPassword");
+    }
+
+    return message;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,7 +124,7 @@ export default function Login() {
       const data: LoginResponse | ApiErrorResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error((data as ApiErrorResponse).message || "Login failed");
+        throw new Error(getApiErrorMessage((data as ApiErrorResponse).message));
       }
 
       const loginData = data as LoginResponse;
@@ -125,7 +137,7 @@ export default function Login() {
       if (error instanceof Error) {
         setApiError(error.message);
       } else {
-        setApiError("Something went wrong. Please try again.");
+        setApiError(t("somethingWentWrong"));
       }
     } finally {
       setIsSubmitting(false);
@@ -135,7 +147,7 @@ export default function Login() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-bg-subtle text-text">
       <Helmet>
-        <title>Login</title>
+        <title>{t("login")}</title>
       </Helmet>
 
       <Link
@@ -151,7 +163,7 @@ export default function Login() {
         "
       >
         <ArrowLeft size={17} />
-        Home
+        {t("home")}
       </Link>
 
       <div className="pointer-events-none absolute inset-0">
@@ -170,43 +182,42 @@ export default function Login() {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-bg px-4 py-2 text-sm font-semibold text-primary shadow-sm">
               <Sparkles size={16} />
-              Realtime Chat Platform
+              {t("loginBadge")}
             </div>
 
             <h1 className="max-w-xl text-5xl font-semibold tracking-tight text-text leading-tight">
-              Welcome back,
+              {t("loginHeroTitle1")}
               <br />
-              connect with your friends instantly.
+              {t("loginHeroTitle2")}
             </h1>
 
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-text-secondary">
-              Login to continue your conversations, send messages in realtime,
-              and stay connected with people who matter.
+              {t("loginHeroDesc")}
             </p>
 
             <div className="mt-10 grid max-w-xl grid-cols-2 gap-4">
               <InfoCard
                 icon={<MessageCircle size={22} />}
-                title="Chat"
-                desc="Send and receive messages instantly."
+                title={t("loginFeatureChatTitle")}
+                desc={t("loginFeatureChatDesc")}
               />
 
               <InfoCard
                 icon={<ShieldCheck size={22} />}
-                title="Safe"
-                desc="Your account is protected."
+                title={t("loginFeatureSafeTitle")}
+                desc={t("loginFeatureSafeDesc")}
               />
 
               <InfoCard
                 icon={<Zap size={22} />}
-                title="Fast"
-                desc="Realtime update with WebSocket."
+                title={t("loginFeatureFastTitle")}
+                desc={t("loginFeatureFastDesc")}
               />
 
               <InfoCard
                 icon={<UserPlus size={22} />}
-                title="Simple"
-                desc="Create account in seconds."
+                title={t("loginFeatureSimpleTitle")}
+                desc={t("loginFeatureSimpleDesc")}
               />
             </div>
           </motion.div>
@@ -227,11 +238,11 @@ export default function Login() {
               </div>
 
               <h2 className="text-3xl font-semibold tracking-tight text-text">
-                Login
+                {t("signin")}
               </h2>
 
               <p className="mt-2 text-base text-text-secondary">
-                Enter your account information to continue.
+                {t("loginFormDesc")}
               </p>
             </div>
 
@@ -245,7 +256,7 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-text">
-                  Email
+                  {t("email")}
                 </label>
 
                 <div
@@ -263,7 +274,7 @@ export default function Login() {
                     type="email"
                     value={form.email}
                     onChange={handleChange}
-                    placeholder="Enter your email"
+                    placeholder={t("loginEmailPlaceholder")}
                     className="
                       w-full bg-transparent text-base text-text outline-none
                       placeholder:text-text-tertiary
@@ -280,7 +291,7 @@ export default function Login() {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-text">
-                  Password
+                  {t("password")}
                 </label>
 
                 <div
@@ -298,7 +309,7 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder={t("loginPasswordPlaceholder")}
                     className="
                       w-full bg-transparent text-base text-text outline-none
                       placeholder:text-text-tertiary
@@ -309,6 +320,11 @@ export default function Login() {
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="text-text-secondary hover:text-primary transition-colors cursor-pointer"
+                    aria-label={
+                      showPassword
+                        ? t("loginHidePassword")
+                        : t("loginShowPassword")
+                    }
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -324,14 +340,14 @@ export default function Login() {
               <div className="flex items-center justify-between gap-4">
                 <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                   <input type="checkbox" className="h-4 w-4 accent-primary" />
-                  Remember me
+                  {t("rememberMe")}
                 </label>
 
                 <button
                   type="button"
                   className="text-sm font-semibold text-primary hover:text-primary/80 cursor-pointer"
                 >
-                  Forgot password?
+                  {t("forgotPassword")}
                 </button>
               </div>
 
@@ -347,17 +363,17 @@ export default function Login() {
                   disabled:cursor-not-allowed disabled:opacity-70
                 "
               >
-                {isSubmitting ? "Logging in..." : "Login"}
+                {isSubmitting ? t("loggingIn") : t("login")}
               </button>
             </form>
 
             <p className="mt-7 text-center text-sm text-text-secondary">
-              Do not have an account?{" "}
+              {t("noAccount")}{" "}
               <Link
                 to="/register"
                 className="font-semibold text-primary hover:text-primary/80"
               >
-                Create account
+                {t("createAccount")}
               </Link>
             </p>
           </motion.div>

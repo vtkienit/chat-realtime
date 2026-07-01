@@ -61,6 +61,8 @@ export const translations = {
     thickness: "Độ dày",
     description: "Mô tả",
     userGuide: "Hướng dẫn sử dụng",
+
+    // Color names
     red: "Đỏ",
     white: "Trắng",
     black: "Đen",
@@ -79,6 +81,7 @@ export const translations = {
     gold: "Vàng gold",
     transparent: "Trong suốt",
 
+    // Chat page
     chat: "Trò chuyện",
     chats: "Trò chuyện",
     chatNow: "Chat Ngay",
@@ -128,6 +131,7 @@ export const translations = {
     websocketNotConnected: "WebSocket chưa được kết nối.",
     somethingWentWrong: "Đã có lỗi xảy ra. Vui lòng thử lại.",
 
+    // Support page
     supportBadge: "Trung tâm hỗ trợ",
     supportTitle: "Chúng tôi có thể giúp gì cho bạn?",
     supportDesc: "Tìm câu trả lời cho các câu hỏi thường gặp về đăng ký, đăng nhập, nhắn tin realtime và bảo mật tài khoản.",
@@ -167,7 +171,8 @@ export const translations = {
 
     supportFaqMessageErrorQuestion: "Tại sao gửi tin nhắn không thành công?",
     supportFaqMessageErrorAnswer: "Nguyên nhân thường gặp là WebSocket chưa kết nối, token đăng nhập hết hạn, hoặc backend chưa chạy. Hãy thử tải lại trang, đăng nhập lại và kiểm tra server backend.",
-      
+    
+    // Contact page
     contactBadge: "Thông tin cá nhân",
     contactTitle: "Liên hệ với tôi",
     contactDesc: "Xin chào, tôi là Vũ Trung Kiên. Đây là trang thông tin liên hệ và giới thiệu ngắn về tôi trong hệ thống chat realtime.",
@@ -203,6 +208,87 @@ export const translations = {
     contactCtaTitle: "Bạn muốn liên hệ với tôi?",
     contactCtaDesc: "Bạn có thể gửi email trực tiếp cho tôi hoặc mở trang chat để tiếp tục trò chuyện trong ứng dụng.",
     contactEmailMe: "Email cho tôi",
+
+    // Login page
+    email: "Email",
+    password: "Mật khẩu",
+
+    loginBadge: "Nền tảng chat realtime",
+    loginHeroTitle1: "Chào mừng trở lại,",
+    loginHeroTitle2: "kết nối với bạn bè tức thì.",
+    loginHeroDesc: "Đăng nhập để tiếp tục cuộc trò chuyện, gửi tin nhắn realtime và luôn giữ kết nối với những người quan trọng.",
+    loginFormDesc: "Nhập thông tin tài khoản của bạn để tiếp tục.",
+
+    loginFeatureChatTitle: "Chat",
+    loginFeatureChatDesc: "Gửi và nhận tin nhắn ngay lập tức.",
+    loginFeatureSafeTitle: "An toàn",
+    loginFeatureSafeDesc: "Tài khoản của bạn được bảo vệ.",
+    loginFeatureFastTitle: "Nhanh chóng",
+    loginFeatureFastDesc: "Cập nhật realtime bằng WebSocket.",
+    loginFeatureSimpleTitle: "Đơn giản",
+    loginFeatureSimpleDesc: "Tạo tài khoản chỉ trong vài giây.",
+
+    loginEmailPlaceholder: "Nhập email của bạn",
+    loginPasswordPlaceholder: "Nhập mật khẩu của bạn",
+    loginShowPassword: "Hiện mật khẩu",
+    loginHidePassword: "Ẩn mật khẩu",
+
+    rememberMe: "Ghi nhớ tôi",
+    forgotPassword: "Quên mật khẩu?",
+    loggingIn: "Đang đăng nhập...",
+    noAccount: "Chưa có tài khoản?",
+    createAccount: "Tạo tài khoản",
+
+    loginEmailRequired: "Email là bắt buộc",
+    loginEmailInvalid: "Email không hợp lệ",
+    loginPasswordRequired: "Mật khẩu là bắt buộc",
+    loginPasswordMinLength: "Mật khẩu phải có ít nhất 4 ký tự",
+    loginFailed: "Đăng nhập thất bại",
+    loginInvalidEmailOrPassword: "Email hoặc mật khẩu không đúng",
+
+    // Register page
+    name: "Tên",
+    register: "Đăng ký",
+    confirmPassword: "Xác nhận mật khẩu",
+
+    registerBadge: "Bắt đầu hành trình realtime",
+    registerHeroTitle1: "Tạo tài khoản của bạn,",
+    registerHeroTitle2: "chat nhanh hơn với mọi người.",
+    registerHeroDesc: "Đăng ký để xây dựng hồ sơ cá nhân, tham gia các cuộc trò chuyện và trải nghiệm nhắn tin realtime mượt mà.",
+    registerFormDesc: "Tham gia ngay và bắt đầu nhắn tin realtime.",
+
+    registerFeatureChatTitle: "Chat",
+    registerFeatureChatDesc: "Gửi và nhận tin nhắn ngay lập tức.",
+    registerFeatureSafeTitle: "An toàn",
+    registerFeatureSafeDesc: "Tài khoản của bạn được bảo vệ.",
+    registerFeatureFastTitle: "Nhanh chóng",
+    registerFeatureFastDesc: "Cập nhật realtime bằng WebSocket.",
+    registerFeatureSimpleTitle: "Đơn giản",
+    registerFeatureSimpleDesc: "Tạo tài khoản chỉ trong vài giây.",
+
+    registerNamePlaceholder: "Nhập tên của bạn",
+    registerEmailPlaceholder: "Nhập email của bạn",
+    registerPasswordPlaceholder: "Tạo mật khẩu của bạn",
+    registerConfirmPasswordPlaceholder: "Xác nhận mật khẩu của bạn",
+
+    registerShowPassword: "Hiện mật khẩu",
+    registerHidePassword: "Ẩn mật khẩu",
+    registerShowConfirmPassword: "Hiện mật khẩu xác nhận",
+    registerHideConfirmPassword: "Ẩn mật khẩu xác nhận",
+
+    creatingAccount: "Đang tạo tài khoản...",
+    alreadyHaveAccount: "Đã có tài khoản?",
+
+    registerNameRequired: "Tên là bắt buộc",
+    registerNameMinLength: "Tên phải có ít nhất 2 ký tự",
+    registerEmailRequired: "Email là bắt buộc",
+    registerEmailInvalid: "Email không hợp lệ",
+    registerPasswordRequired: "Mật khẩu là bắt buộc",
+    registerPasswordMinLength: "Mật khẩu phải có ít nhất 4 ký tự",
+    registerConfirmPasswordRequired: "Vui lòng xác nhận mật khẩu",
+    registerPasswordNotMatch: "Mật khẩu không khớp",
+    registerFailed: "Đăng ký thất bại",
+    registerEmailAlreadyExists: "Email đã tồn tại",
   },
   en: {
     hi: "Hi",
@@ -266,6 +352,7 @@ export const translations = {
     description: "Description",
     userGuide: "User Guide",
 
+    // Color names
     red: "Red",
     white: "White",
     black: "Black",
@@ -284,6 +371,7 @@ export const translations = {
     gold: "Gold",
     transparent: "Transparent",
 
+    // Chat page
     chat: "Chat",
     chats: "Chats",
     chatNow: "Chat Now",
@@ -332,6 +420,7 @@ export const translations = {
     newMessage: "New message",
     newMessageFrom: "New message from",
 
+    // Support page
     supportBadge: "Support Center",
     supportTitle: "How can we help you?",
     supportDesc: "Find answers to common questions about registration, login, realtime messaging, and account security.",
@@ -372,6 +461,7 @@ export const translations = {
     supportFaqMessageErrorQuestion: "Why can I not send a message?",
     supportFaqMessageErrorAnswer: "Common reasons include WebSocket not being connected, an expired login token, or the backend server not running. Try refreshing the page, logging in again, and checking your backend server.",
     
+    // Contact page
     contactBadge: "Personal Information",
     contactTitle: "Contact Me",
     contactDesc: "Hello, I am Vu Trung Kien. This is my contact and short introduction page inside the realtime chat system.",
@@ -407,5 +497,86 @@ export const translations = {
     contactCtaTitle: "Want to contact me?",
     contactCtaDesc: "You can send me an email directly or open the chat page to continue the conversation inside the app.",
     contactEmailMe: "Email Me",
+
+    // Login page
+    email: "Email",
+    password: "Password",
+
+    loginBadge: "Realtime Chat Platform",
+    loginHeroTitle1: "Welcome back,",
+    loginHeroTitle2: "connect with your friends instantly.",
+    loginHeroDesc: "Login to continue your conversations, send messages in realtime, and stay connected with people who matter.",
+    loginFormDesc: "Enter your account information to continue.",
+
+    loginFeatureChatTitle: "Chat",
+    loginFeatureChatDesc: "Send and receive messages instantly.",
+    loginFeatureSafeTitle: "Safe",
+    loginFeatureSafeDesc: "Your account is protected.",
+    loginFeatureFastTitle: "Fast",
+    loginFeatureFastDesc: "Realtime update with WebSocket.",
+    loginFeatureSimpleTitle: "Simple",
+    loginFeatureSimpleDesc: "Create account in seconds.",
+
+    loginEmailPlaceholder: "Enter your email",
+    loginPasswordPlaceholder: "Enter your password",
+    loginShowPassword: "Show password",
+    loginHidePassword: "Hide password",
+
+    rememberMe: "Remember me",
+    forgotPassword: "Forgot password?",
+    loggingIn: "Logging in...",
+    noAccount: "Do not have an account?",
+    createAccount: "Create account",
+
+    loginEmailRequired: "Email is required",
+    loginEmailInvalid: "Email is invalid",
+    loginPasswordRequired: "Password is required",
+    loginPasswordMinLength: "Password must be at least 4 characters",
+    loginFailed: "Login failed",
+    loginInvalidEmailOrPassword: "Invalid email or password",
+
+    // Register page
+    name: "Name",
+    register: "Register",
+    confirmPassword: "Confirm password",
+
+    registerBadge: "Start your realtime journey",
+    registerHeroTitle1: "Create your account,",
+    registerHeroTitle2: "chat faster with everyone.",
+    registerHeroDesc: "Register to build your personal profile, join conversations, and experience smooth realtime messaging.",
+    registerFormDesc: "Join us and start chatting in realtime.",
+
+    registerFeatureChatTitle: "Chat",
+    registerFeatureChatDesc: "Send and receive messages instantly.",
+    registerFeatureSafeTitle: "Safe",
+    registerFeatureSafeDesc: "Your account is protected.",
+    registerFeatureFastTitle: "Fast",
+    registerFeatureFastDesc: "Realtime update with WebSocket.",
+    registerFeatureSimpleTitle: "Simple",
+    registerFeatureSimpleDesc: "Create account in seconds.",
+
+    registerNamePlaceholder: "Enter your name",
+    registerEmailPlaceholder: "Enter your email",
+    registerPasswordPlaceholder: "Create your password",
+    registerConfirmPasswordPlaceholder: "Confirm your password",
+
+    registerShowPassword: "Show password",
+    registerHidePassword: "Hide password",
+    registerShowConfirmPassword: "Show confirm password",
+    registerHideConfirmPassword: "Hide confirm password",
+
+    creatingAccount: "Creating account...",
+    alreadyHaveAccount: "Already have an account?",
+
+    registerNameRequired: "Name is required",
+    registerNameMinLength: "Name must be at least 2 characters",
+    registerEmailRequired: "Email is required",
+    registerEmailInvalid: "Email is invalid",
+    registerPasswordRequired: "Password is required",
+    registerPasswordMinLength: "Password must be at least 4 characters",
+    registerConfirmPasswordRequired: "Confirm password is required",
+    registerPasswordNotMatch: "Password does not match",
+    registerFailed: "Register failed",
+    registerEmailAlreadyExists: "Email already exists",
   },
 };

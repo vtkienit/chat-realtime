@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useLanguage } from "../contexts/LanguageProvider";
 import {
   ArrowLeft,
   Eye,
@@ -39,6 +40,7 @@ type ApiErrorResponse = {
 
 export default function Register() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [form, setForm] = useState<RegisterForm>({
     name: "",
@@ -74,32 +76,42 @@ export default function Register() {
     const newErrors: RegisterErrors = {};
 
     if (!form.name.trim()) {
-      newErrors.name = "Name is required";
+      newErrors.name = t("registerNameRequired");
     } else if (form.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
+      newErrors.name = t("registerNameMinLength");
     }
 
     if (!form.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("registerEmailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = "Email is invalid";
+      newErrors.email = t("registerEmailInvalid");
     }
 
     if (!form.password.trim()) {
-      newErrors.password = "Password is required";
+      newErrors.password = t("registerPasswordRequired");
     } else if (form.password.length < 4) {
-      newErrors.password = "Password must be at least 4 characters";
+      newErrors.password = t("registerPasswordMinLength");
     }
 
     if (!form.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Confirm password is required";
+      newErrors.confirmPassword = t("registerConfirmPasswordRequired");
     } else if (form.confirmPassword !== form.password) {
-      newErrors.confirmPassword = "Password does not match";
+      newErrors.confirmPassword = t("registerPasswordNotMatch");
     }
 
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
+  };
+
+  const getApiErrorMessage = (message?: string) => {
+    if (!message) return t("registerFailed");
+
+    if (message === "Email already exists") {
+      return t("registerEmailAlreadyExists");
+    }
+
+    return message;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -126,9 +138,7 @@ export default function Register() {
       const data: RegisterResponse | ApiErrorResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          (data as ApiErrorResponse).message || "Register failed"
-        );
+        throw new Error(getApiErrorMessage((data as ApiErrorResponse).message));
       }
 
       navigate("/login");
@@ -136,7 +146,7 @@ export default function Register() {
       if (error instanceof Error) {
         setApiError(error.message);
       } else {
-        setApiError("Something went wrong. Please try again.");
+        setApiError(t("somethingWentWrong"));
       }
     } finally {
       setIsSubmitting(false);
@@ -146,7 +156,7 @@ export default function Register() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-bg-subtle text-text">
       <Helmet>
-        <title>Register</title>
+        <title>{t("register")}</title>
       </Helmet>
 
       <Link
@@ -162,7 +172,7 @@ export default function Register() {
         "
       >
         <ArrowLeft size={17} />
-        Home
+        {t("home")}
       </Link>
 
       <div className="pointer-events-none absolute inset-0">
@@ -181,43 +191,42 @@ export default function Register() {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-bg px-4 py-2 text-sm font-semibold text-primary shadow-sm">
               <Sparkles size={16} />
-              Start your realtime journey
+              {t("registerBadge")}
             </div>
 
             <h1 className="max-w-xl text-5xl font-semibold tracking-tight text-text leading-tight">
-              Create your account,
+              {t("registerHeroTitle1")}
               <br />
-              chat faster with everyone.
+              {t("registerHeroTitle2")}
             </h1>
 
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-text-secondary">
-              Register to build your personal profile, join conversations, and
-              experience smooth realtime messaging.
+              {t("registerHeroDesc")}
             </p>
 
             <div className="mt-10 grid max-w-xl grid-cols-2 gap-4">
               <InfoCard
                 icon={<MessageCircle size={22} />}
-                title="Chat"
-                desc="Send and receive messages instantly."
+                title={t("registerFeatureChatTitle")}
+                desc={t("registerFeatureChatDesc")}
               />
 
               <InfoCard
                 icon={<ShieldCheck size={22} />}
-                title="Safe"
-                desc="Your account is protected."
+                title={t("registerFeatureSafeTitle")}
+                desc={t("registerFeatureSafeDesc")}
               />
 
               <InfoCard
                 icon={<Zap size={22} />}
-                title="Fast"
-                desc="Realtime update with WebSocket."
+                title={t("registerFeatureFastTitle")}
+                desc={t("registerFeatureFastDesc")}
               />
 
               <InfoCard
                 icon={<UserPlus size={22} />}
-                title="Simple"
-                desc="Create account in seconds."
+                title={t("registerFeatureSimpleTitle")}
+                desc={t("registerFeatureSimpleDesc")}
               />
             </div>
           </motion.div>
@@ -238,11 +247,11 @@ export default function Register() {
               </div>
 
               <h2 className="text-3xl font-semibold tracking-tight text-text">
-                Create account
+                {t("signup")}
               </h2>
 
               <p className="mt-2 text-base text-text-secondary">
-                Join us and start chatting in realtime.
+                {t("registerFormDesc")}
               </p>
             </div>
 
@@ -256,7 +265,7 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-text">
-                  Name
+                  {t("name")}
                 </label>
 
                 <div
@@ -274,7 +283,7 @@ export default function Register() {
                     type="text"
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="Enter your name"
+                    placeholder={t("registerNamePlaceholder")}
                     className="
                       w-full bg-transparent text-base text-text outline-none
                       placeholder:text-text-tertiary
@@ -291,7 +300,7 @@ export default function Register() {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-text">
-                  Email
+                  {t("email")}
                 </label>
 
                 <div
@@ -309,7 +318,7 @@ export default function Register() {
                     type="email"
                     value={form.email}
                     onChange={handleChange}
-                    placeholder="Enter your email"
+                    placeholder={t("registerEmailPlaceholder")}
                     className="
                       w-full bg-transparent text-base text-text outline-none
                       placeholder:text-text-tertiary
@@ -326,7 +335,7 @@ export default function Register() {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-text">
-                  Password
+                  {t("password")}
                 </label>
 
                 <div
@@ -344,7 +353,7 @@ export default function Register() {
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="Create your password"
+                    placeholder={t("registerPasswordPlaceholder")}
                     className="
                       w-full bg-transparent text-base text-text outline-none
                       placeholder:text-text-tertiary
@@ -355,6 +364,11 @@ export default function Register() {
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="text-text-secondary hover:text-primary transition-colors cursor-pointer"
+                    aria-label={
+                      showPassword
+                        ? t("registerHidePassword")
+                        : t("registerShowPassword")
+                    }
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -369,7 +383,7 @@ export default function Register() {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-text">
-                  Confirm password
+                  {t("confirmPassword")}
                 </label>
 
                 <div
@@ -387,7 +401,7 @@ export default function Register() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={form.confirmPassword}
                     onChange={handleChange}
-                    placeholder="Confirm your password"
+                    placeholder={t("registerConfirmPasswordPlaceholder")}
                     className="
                       w-full bg-transparent text-base text-text outline-none
                       placeholder:text-text-tertiary
@@ -398,6 +412,11 @@ export default function Register() {
                     type="button"
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                     className="text-text-secondary hover:text-primary transition-colors cursor-pointer"
+                    aria-label={
+                      showConfirmPassword
+                        ? t("registerHideConfirmPassword")
+                        : t("registerShowConfirmPassword")
+                    }
                   >
                     {showConfirmPassword ? (
                       <EyeOff size={20} />
@@ -426,17 +445,17 @@ export default function Register() {
                   disabled:cursor-not-allowed disabled:opacity-70
                 "
               >
-                {isSubmitting ? "Creating account..." : "Create account"}
+                {isSubmitting ? t("creatingAccount") : t("createAccount")}
               </button>
             </form>
 
             <p className="mt-7 text-center text-sm text-text-secondary">
-              Already have an account?{" "}
+              {t("alreadyHaveAccount")}{" "}
               <Link
                 to="/login"
                 className="font-semibold text-primary hover:text-primary/80"
               >
-                Login
+                {t("login")}
               </Link>
             </p>
           </motion.div>
